@@ -1,0 +1,849 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Demokratometr</title>
+<meta name="description" content="Demokratometr – stav demokracie v České republice podle mezinárodních indexů a aktuálních signálů.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap&subset=latin-ext">
+<style>
+:root{
+  --ground:#F2F4F3; --paper:#FFFFFF; --ink:#15212B; --ink-2:#44525E; --ink-3:#66737E;
+  --line:#D6DDDF; --line-2:#E6EBEC; --accent:#1C5A7A; --accent-2:#E3EEF3; --accent-ink:#123F57;
+  --good:#2C7A4B; --warn:#A5761A; --bad:#B03A32; --good-bg:#E3F1E8; --warn-bg:#F6EDD6; --bad-bg:#F7E2DF;
+  --r1:#2C7A4B; --r2:#6D9A37; --r3:#B99527; --r4:#CB7A2C; --r5:#C1572E; --r6:#A2363A; --r7:#6B2437;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --sans:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#10171C; --paper:#172128; --ink:#E6ECEF; --ink-2:#B3C0C8; --ink-3:#8E9DA7;
+    --line:#2B3942; --line-2:#223038; --accent:#7DB8D6; --accent-2:#1B3140; --accent-ink:#A9D3E8;
+    --good:#6CC08C; --warn:#DDB25A; --bad:#EE8577; --good-bg:#183326; --warn-bg:#352B14; --bad-bg:#3A1D1A;
+    --r1:#4FA873; --r2:#8DB85A; --r3:#D2B04A; --r4:#DE944C; --r5:#DB7550; --r6:#CC5A5C; --r7:#A54C66;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#10171C; --paper:#172128; --ink:#E6ECEF; --ink-2:#B3C0C8; --ink-3:#8E9DA7;
+  --line:#2B3942; --line-2:#223038; --accent:#7DB8D6; --accent-2:#1B3140; --accent-ink:#A9D3E8;
+  --good:#6CC08C; --warn:#DDB25A; --bad:#EE8577; --good-bg:#183326; --warn-bg:#352B14; --bad-bg:#3A1D1A;
+  --r1:#4FA873; --r2:#8DB85A; --r3:#D2B04A; --r4:#DE944C; --r5:#DB7550; --r6:#CC5A5C; --r7:#A54C66;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;padding:0 16px}
+.wrap{max-width:1120px;margin:0 auto}
+a{color:var(--accent)} a:hover{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1,h2,h3{font-family:var(--serif);font-weight:650;text-wrap:balance;margin:0;line-height:1.15}
+h2{font-size:clamp(28px,4vw,38px)}
+h3{font-size:21px;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.muted{color:var(--ink-2)}
+.small{font-size:14px}
+
+/* nav */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:0 -16px;padding:0 16px}
+.top .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.brand{font-family:var(--serif);font-weight:650;font-size:20px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand svg{flex:none}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:14px;color:var(--ink-2);text-decoration:none;padding:6px 10px;border-radius:6px;white-space:nowrap}
+.nav a:hover{background:var(--accent-2);color:var(--accent-ink)}
+.flag{display:inline-block;width:24px;height:16px;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px var(--line);flex:none;line-height:0}
+.flag svg{width:100%;height:100%;display:block}
+.picker{position:relative;flex:none}
+.pick-btn{font:inherit;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;min-height:40px;padding:6px 10px 6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer}
+.pick-btn:hover{border-color:var(--accent)}
+.pick-btn .chev2{color:var(--ink-3);transition:transform .15s}
+.pick-btn[aria-expanded="true"] .chev2{transform:rotate(180deg)}
+.pick-pop{position:absolute;right:0;top:calc(100% + 6px);width:min(340px,calc(100vw - 32px));background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(10,20,30,.14);padding:8px;z-index:30;display:grid;gap:6px}
+.pick-search{font:inherit;font-size:15px;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--ground);color:var(--ink)}
+.pick-list{list-style:none;margin:0;padding:0;max-height:min(360px,60vh);overflow-y:auto;display:grid;gap:2px}
+.pick-group{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:8px 10px 4px}
+.pick-opt{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer;min-height:44px}
+.pick-opt:hover,.pick-opt[data-active="1"]{background:var(--accent-2)}
+.pick-opt[aria-selected="true"]{font-weight:700}
+.pick-opt[aria-disabled="true"]{cursor:default;color:var(--ink-3)}
+.pick-opt[aria-disabled="true"]:hover{background:none}
+.pick-opt .meta{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;color:var(--ink-2)}
+.pick-opt .rd{width:9px;height:9px;border-radius:50%;display:inline-block}
+.pick-opt .soon{font-family:var(--sans);font-size:12px}
+.pick-empty{padding:12px 10px;color:var(--ink-3);font-size:14px}
+.pick-foot{font-size:12px;color:var(--ink-3);padding:4px 10px 2px}
+@media (max-width:760px){.nav{display:none}.picker{margin-left:auto}}
+@media (max-width:420px){.pick-btn .pname{display:none}}
+.cmp th .fbtn{display:inline-flex;align-items:center;gap:8px}
+/* compare */
+.cmp td,.cmp th{white-space:nowrap}
+.cmp td.cell{min-width:150px}
+.mini{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:center}
+.mini .bar{height:8px;border-radius:4px;background:var(--line-2);position:relative;overflow:hidden}
+.mini .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--ink-3)}
+.cmp .cur .mini .bar i{background:var(--accent)}
+.cmp th.cur,.cmp td.cur{background:var(--accent-2)}
+.cmp tr.total td,.cmp tr.total th{font-weight:700;border-top:2px solid var(--line)}
+.cmp tr.sep th{font-size:12px;font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);font-weight:500;background:var(--ground)}
+.cmp .num{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.spec-marker.other{font-weight:500;color:var(--ink-3)}
+.spec-marker.other::after{background:var(--ink-3);height:12px}
+
+section{padding-block:56px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+.sec-head{display:grid;gap:10px;margin-bottom:32px;max-width:720px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:48px;align-items:center;padding-block:48px 56px}
+@media (max-width:860px){.hero{grid-template-columns:1fr;gap:28px}}
+.hero h1{font-size:clamp(34px,5.4vw,56px);letter-spacing:-.015em}
+.hero .lede{font-size:19px;color:var(--ink-2);max-width:58ch}
+.stamp{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 12px;width:fit-content}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--warn);display:inline-block}
+.gauge-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px 24px 20px;display:grid;gap:18px}
+.gauge svg{width:100%;height:auto;display:block}
+.gauge text{font-family:var(--mono)}
+.verdict{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.score-big{font-family:var(--serif);font-size:64px;font-weight:650;line-height:1}
+.score-big small{font-size:20px;color:var(--ink-3);font-family:var(--mono);font-weight:400}
+.regime-pill{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;padding:6px 12px;border-radius:999px;background:var(--good-bg);color:var(--good)}
+.readouts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.readout{border:1px solid var(--line-2);border-radius:10px;padding:12px 14px;display:grid;gap:4px}
+.readout .val{font-weight:600;display:flex;align-items:center;gap:8px}
+.arrow{font-family:var(--mono);font-weight:500}
+.up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--warn)}
+.conf{font-size:13px;color:var(--ink-2)}
+
+/* domains */
+.dom-list{display:grid;gap:0;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.dom{border-top:1px solid var(--line-2)}
+.dom:first-child{border-top:0}
+.dom > button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:minmax(170px,240px) 1fr 56px 132px 20px;gap:18px;align-items:center;width:100%;padding:16px 20px}
+.dom > button:hover{background:var(--accent-2)}
+.dom > button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.dom-name{font-weight:600}
+.dom-sub{font-size:13px;color:var(--ink-3);line-height:1.35}
+.scale{position:relative;height:28px}
+.scale .track{position:absolute;left:0;right:0;top:12px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--r7) 0 20%,var(--r6) 20% 35%,var(--r5) 35% 45%,var(--r4) 45% 55%,var(--r3) 55% 65%,var(--r2) 65% 80%,var(--r1) 80% 100%);opacity:.35}
+.scale .range{position:absolute;top:9px;height:10px;border-radius:5px;background:var(--ink);opacity:.14}
+.scale .pt{position:absolute;top:6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--paper);border:3px solid var(--ink)}
+.dom-score{font-family:var(--mono);font-size:20px;font-weight:500;text-align:right}
+.trend-chip{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;text-align:center;white-space:nowrap}
+.t-down{background:var(--bad-bg);color:var(--bad)} .t-flat{background:var(--warn-bg);color:var(--warn)} .t-up{background:var(--good-bg);color:var(--good)}
+.chev{transition:transform .2s;color:var(--ink-3)}
+.dom[data-open="1"] .chev{transform:rotate(90deg)}
+.dom-detail{padding:4px 20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.dom-detail h4{margin:0 0 10px;font-size:13px;font-family:var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.ind{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 0;border-top:1px solid var(--line-2);font-size:14px}
+.ind:first-of-type{border-top:0}
+.ind .v{font-family:var(--mono);text-align:right}
+.ind .s{grid-column:1/-1;font-size:12px;color:var(--ink-3)}
+.sig{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line-2);font-size:14px}
+.sig:first-of-type{border-top:0}
+.sig .s{font-size:12px;color:var(--ink-3)}
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:13px;color:var(--ink-2);margin-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+@media (max-width:760px){
+  .dom > button{grid-template-columns:1fr auto;grid-template-areas:"n s" "sc sc" "t c";gap:8px 12px}
+  .dom > button .dom-n{grid-area:n}.dom > button .scale{grid-area:sc}.dom > button .dom-score{grid-area:s}.dom > button .trend-chip{grid-area:t;justify-self:start}.dom > button .chev{grid-area:c;justify-self:end}
+  .dom-detail{grid-template-columns:1fr}
+}
+
+/* spectrum */
+.spectrum{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:28px 24px 20px;display:grid;gap:20px}
+.spec-bar{display:grid;grid-template-columns:20fr 15fr 10fr 10fr 10fr 15fr 20fr;height:14px;border-radius:7px;overflow:hidden;position:relative}
+.spec-wrap{position:relative;padding-top:34px}
+.spec-marker{position:absolute;top:0;transform:translateX(-50%);display:grid;justify-items:center;gap:2px;font-size:12px;font-weight:700;white-space:nowrap}
+.spec-marker::after{content:"";width:2px;height:20px;background:var(--ink)}
+.spec-labels{display:grid;grid-template-columns:20fr 15fr 10fr 10fr 10fr 15fr 20fr;font-size:12px;color:var(--ink-2);margin-top:8px;line-height:1.25}
+.spec-labels span{padding-right:6px}
+.spec-scroll{overflow-x:auto}
+.spec-inner{min-width:640px}
+.regimes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:24px}
+.regime{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:8px;align-content:start;position:relative}
+.regime[data-here="1"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.regime .sw{width:28px;height:6px;border-radius:3px}
+.regime .here{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:2px 8px;border-radius:4px}
+.regime dl{margin:0;display:grid;gap:6px;font-size:14px}
+.regime dt{font-size:12px;font-family:var(--mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.regime dd{margin:0}
+.tbl-wrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:12px;margin-top:24px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+thead th{font-size:12px;font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);font-weight:500;background:var(--ground)}
+tbody tr:last-child td{border-bottom:0}
+.deform{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper);margin-top:16px}
+.deform div{padding:16px 18px;border-right:1px solid var(--line-2);border-bottom:1px solid var(--line-2);display:grid;gap:6px;align-content:start}
+.deform b{font-family:var(--serif);font-size:18px}
+.deform .m{font-size:13px;color:var(--ink-3)}
+
+/* timeline */
+.tl{display:grid;gap:0;position:relative;padding-left:24px}
+.tl::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding:10px 0 16px;display:grid;grid-template-columns:120px 1fr;gap:16px}
+.tl-item::before{content:"";position:absolute;left:-23px;top:17px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:3px solid var(--ink-3)}
+.tl-item[data-d="-1"]::before{border-color:var(--bad)}
+.tl-item[data-d="1"]::before{border-color:var(--good)}
+.tl-date{font-family:var(--mono);font-size:13px;color:var(--ink-2);padding-top:2px}
+.tl-body{display:grid;gap:4px}
+.tl-tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;padding:1px 8px;border-radius:4px;background:var(--accent-2);color:var(--accent-ink)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.fbtn{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);cursor:pointer;min-height:36px}
+.fbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@media (max-width:600px){.tl-item{grid-template-columns:1fr;gap:2px}}
+
+/* sources */
+.cred{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.c-h{background:var(--good-bg);color:var(--good)} .c-m{background:var(--warn-bg);color:var(--warn)} .c-l{background:var(--bad-bg);color:var(--bad)}
+.crit{display:flex;gap:3px}
+.crit i{width:10px;height:10px;border-radius:2px;background:var(--line);display:block}
+.crit i.on{background:var(--accent)}
+details.why summary{cursor:pointer;color:var(--accent);font-size:13px}
+details.why p{font-size:13px;color:var(--ink-2);margin-top:6px}
+
+/* method */
+.method{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media (max-width:860px){.method{grid-template-columns:1fr}}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;display:grid;gap:14px;align-content:start}
+.formula{font-family:var(--mono);font-size:13px;background:var(--ground);border:1px solid var(--line-2);border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:pre}
+.weights{display:grid;gap:10px}
+.w-row{display:grid;grid-template-columns:1fr 120px 36px;gap:12px;align-items:center;font-size:14px}
+.w-row input{width:100%;accent-color:var(--accent)}
+.w-row output{font-family:var(--mono);text-align:right}
+.btn{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;min-height:40px;width:fit-content}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.crit-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.crit-list li{display:grid;grid-template-columns:150px 1fr;gap:12px;font-size:14px;padding-bottom:10px;border-bottom:1px solid var(--line-2)}
+.crit-list li:last-child{border-bottom:0}
+@media (max-width:500px){.crit-list li{grid-template-columns:1fr;gap:2px}}
+.thresholds{display:grid;gap:6px;font-size:14px}
+.thresholds div{display:grid;grid-template-columns:14px 70px 1fr;gap:10px;align-items:center}
+.thresholds i{width:14px;height:14px;border-radius:3px;display:block}
+.note{font-size:14px;background:var(--warn-bg);color:var(--ink);border-radius:10px;padding:14px 16px}
+.note b{color:var(--warn)}
+
+/* glossary */
+.gl-search{font:inherit;font-size:16px;width:100%;max-width:420px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);margin-bottom:20px}
+.gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 32px}
+.gl-item{padding:14px 0;border-top:1px solid var(--line);display:grid;gap:4px}
+.gl-item b{font-family:var(--serif);font-size:19px}
+.gl-item .ex{font-size:14px;color:var(--ink-2)}
+.term{border-bottom:1.5px dotted var(--accent);cursor:help;background:none;border-top:0;border-left:0;border-right:0;padding:0;font:inherit;color:inherit}
+#tip{position:fixed;z-index:50;max-width:320px;background:var(--ink);color:var(--ground);font-size:14px;line-height:1.5;padding:12px 14px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#tip b{display:block;margin-bottom:2px}
+
+footer{padding-block:40px 64px;font-size:14px;color:var(--ink-2);display:grid;gap:10px;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (prefers-reduced-motion:no-preference){#needle{transition:transform 1.1s cubic-bezier(.2,.8,.2,1)}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#prehled">
+      <svg width="26" height="18" viewBox="0 0 26 18" aria-hidden="true"><path d="M2 16a11 11 0 0 1 22 0" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13 16 19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      Demokratometr
+    </a>
+    <nav class="nav" aria-label="Sekce">
+      <a href="#oblasti">Oblasti</a><a href="#srovnani">Srovnání</a><a href="#smer">Kam směřujeme</a><a href="#udalosti">Události</a><a href="#zdroje">Zdroje</a><a href="#metodika">Metodika</a><a href="#slovnik">Slovník</a>
+    </nav>
+    <div class="picker" id="picker">
+      <button type="button" class="pick-btn" id="pick-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="pick-pop"><span class="flag" id="pick-flag"></span><span class="pname" id="pick-name">Česko</span><svg class="chev2" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      <div class="pick-pop" id="pick-pop" hidden>
+        <label for="pick-q" class="eyebrow" style="padding:4px 10px 0">Vyberte stát</label>
+        <input id="pick-q" class="pick-search" type="search" placeholder="Hledat stát…" autocomplete="off" role="combobox" aria-expanded="true" aria-controls="pick-list" aria-autocomplete="list">
+        <ul class="pick-list" id="pick-list" role="listbox" aria-label="Státy"></ul>
+        <p class="pick-foot" id="pick-foot"></p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="prehled" class="hero" aria-labelledby="h-hero">
+  <div style="display:grid;gap:18px">
+    <span class="stamp"><span class="dot" aria-hidden="true"></span>Stav k 24. září 2026 · indexy za rok 2025, signály za posledních 12 měsíců</span>
+    <h1 id="h-hero">–</h1>
+    <p class="lede" id="lede">–</p>
+    <p class="small muted">Demokratometr hodnotí instituce, pravidla a praxi, ne politické strany. Každé číslo má zdroj, rok a hodnocení důvěryhodnosti.</p>
+  </div>
+  <div class="gauge-card" aria-label="Demokratometr – celkové skóre">
+    <div class="gauge"><svg id="gauge" viewBox="-14 0 368 196" role="img" aria-labelledby="gauge-desc"><title id="gauge-desc">Budík skóre demokracie</title></svg></div>
+    <div class="verdict">
+      <div>
+        <div class="eyebrow">Celkové skóre</div>
+        <div class="score-big mono" id="score">–<small>/100</small></div>
+      </div>
+      <span class="regime-pill" id="regime-pill">–</span>
+    </div>
+    <div class="readouts">
+      <div class="readout"><span class="eyebrow">Indexy (2025)</span><span class="val" id="idx-val">–</span><span class="small muted" id="idx-detail">–</span></div>
+      <div class="readout"><span class="eyebrow">Signály (12 měsíců)</span><span class="val" id="sig-val"><span class="arrow down" aria-hidden="true">↘</span>Zhoršení</span><span class="small muted" id="sig-count">–</span></div>
+    </div>
+    <p class="conf" id="conf">–</p>
+  </div>
+</section>
+
+<section id="oblasti" aria-labelledby="h-dom">
+  <div class="sec-head">
+    <span class="eyebrow">Dílčí škály</span>
+    <h2 id="h-dom">Dvanáct oblastí demokracie</h2>
+    <p class="muted">Tečka ukazuje skóre oblasti (0–100), šedý pruh rozpětí jednotlivých indikátorů. Čím širší pruh, tím méně se zdroje shodují. Štítek vpravo shrnuje signály za posledních 12 měsíců. Detail oblasti otevřete kliknutím.</p>
+  </div>
+  <div class="dom-list" id="dom-list"></div>
+  <div class="legend">
+    <span><svg width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="3"/></svg>skóre oblasti</span>
+    <span><svg width="30" height="10" aria-hidden="true"><rect width="30" height="10" rx="5" fill="currentColor" opacity=".2"/></svg>rozpětí indikátorů</span>
+    <span>Pozadí škály: pásma režimů od uzavřené autokracie (vlevo) po liberální demokracii (vpravo)</span>
+  </div>
+</section>
+
+<section id="srovnani" aria-labelledby="h-cmp">
+  <div class="sec-head">
+    <span class="eyebrow">Srovnání států</span>
+    <h2 id="h-cmp">Česko, Německo a Slovensko vedle sebe</h2>
+    <p class="muted">Stejná metodika, stejné zdroje, stejné váhy jako výše. Zvýrazněný sloupec je vybraný stát. Kliknutím na název státu v záhlaví ho přepnete.</p>
+  </div>
+  <div class="tbl-wrap" style="margin-top:0"><table class="cmp" id="cmp"></table></div>
+</section>
+
+<section id="smer" aria-labelledby="h-smer">
+  <div class="sec-head">
+    <span class="eyebrow">Typologie režimů</span>
+    <h2 id="h-smer">Kam směřujeme: od liberální demokracie k autokracii</h2>
+    <p class="muted">Režimy nejsou přihrádky, ale úseky jedné škály. Rozhoduje, zda jsou volby svobodné, zda moc kontrolují nezávislé instituce a zda jsou chráněna práva i mezi volbami.</p>
+  </div>
+  <div class="spectrum">
+    <div class="spec-scroll"><div class="spec-inner">
+      <div class="spec-wrap">
+        <div id="spec-markers"></div>
+        <div class="spec-bar" aria-hidden="true">
+          <span style="background:var(--r7)"></span><span style="background:var(--r6)"></span><span style="background:var(--r5)"></span><span style="background:var(--r4)"></span><span style="background:var(--r3)"></span><span style="background:var(--r2)"></span><span style="background:var(--r1)"></span>
+        </div>
+      </div>
+      <div class="spec-labels"><span>Uzavřená autokracie<br><span class="mono">0–20</span></span><span>Volební autokracie<br><span class="mono">20–35</span></span><span>Soutěživý autoritarismus<br><span class="mono">35–45</span></span><span>Hybridní režim<br><span class="mono">45–55</span></span><span>Neliberální demokracie<br><span class="mono">55–65</span></span><span>Volební demokracie<br><span class="mono">65–80</span></span><span>Liberální demokracie<br><span class="mono">80–100</span></span></div>
+    </div></div>
+    <p class="small muted">Hranice pásem stanovuje Demokratometr. Opírají se o klasifikaci Regimes of the World (V-Dem) a kategorie EIU, ale nejsou s nimi totožné.</p>
+  </div>
+  <div class="regimes" id="regimes"></div>
+
+  <h3 style="margin-top:40px">Jak se režimy liší v praxi</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Znak</th><th>Liberální demokracie</th><th>Neliberální demokracie</th><th>Soutěživý autoritarismus</th><th>Uzavřená autokracie</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Volby</th><td>Svobodné a férové</td><td>Svobodné, ale nerovné podmínky (média, zdroje)</td><td>Konají se, pravidla ohýbá vláda</td><td>Nekonají se nebo jsou bez výběru</td></tr>
+      <tr><th scope="row">Soudy</th><td>Nezávislé, rozhodnutí se respektují</td><td>Pod tlakem, obsazování loajálními</td><td>Kontrolované, selektivní spravedlnost</td><td>Nástroj moci</td></tr>
+      <tr><th scope="row">Média</th><td>Plurální, silná veřejnoprávní média</td><td>Útoky, přebírání, finanční tlak</td><td>Dominance provládních médií</td><td>Cenzura</td></tr>
+      <tr><th scope="row">Občanská společnost</th><td>Svobodná, financování transparentní</td><td>Označování, škrty, „zahraniční agenti“</td><td>Registrace, sankce, likvidace</td><td>Zakázaná nebo řízená státem</td></tr>
+      <tr><th scope="row">Opozice</th><td>Může reálně vyhrát</td><td>Může vyhrát, ale je znevýhodněna</td><td>Existuje, výhra téměř nemožná</td><td>Není povolena</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin-top:40px">Deformace vládnutí</h3>
+  <p class="muted" style="margin-top:8px;max-width:720px">Nejsou to samostatné stupně škály. Mohou se objevit v demokracii i v autokracii a signalizují, komu moc ve skutečnosti slouží.</p>
+  <div class="deform" id="deform"></div>
+</section>
+
+<section id="udalosti" aria-labelledby="h-ud">
+  <div class="sec-head">
+    <span class="eyebrow">Časová osa</span>
+    <h2 id="h-ud">Signály, které indexy zatím nezachytily</h2>
+    <p class="muted">Kvalitativní události navázané na oblasti. Barva bodu ukazuje dopad na demokratické standardy: <span class="down">červená</span> = riziko, <span class="up">zelená</span> = posílení, šedá = neutrální.</p>
+  </div>
+  <div class="filters" id="filters" role="group" aria-label="Filtr oblastí"></div>
+  <div class="tl" id="timeline"></div>
+</section>
+
+<section id="zdroje" aria-labelledby="h-zdr">
+  <div class="sec-head">
+    <span class="eyebrow">Zdroje a důvěryhodnost</span>
+    <h2 id="h-zdr">Z čeho vycházíme a jak moc tomu věřit</h2>
+    <p class="muted">Každý zdroj hodnotíme podle šesti kritérií (viz Metodika). Čtverečky ukazují, kolik kritérií splňuje. Zdůvodnění otevřete u každého řádku.</p>
+  </div>
+  <div class="tbl-wrap" style="margin-top:0"><table>
+    <thead><tr><th>Zdroj</th><th>Co měří</th><th>Hodnota – <span id="src-country">Česko</span></th><th>Důvěryhodnost</th></tr></thead>
+    <tbody id="src-body"></tbody>
+  </table></div>
+</section>
+
+<section id="metodika" aria-labelledby="h-met">
+  <div class="sec-head">
+    <span class="eyebrow">Metodika</span>
+    <h2 id="h-met">Jak počítáme skóre a hodnotíme důvěryhodnost</h2>
+  </div>
+  <div class="method">
+    <div class="panel">
+      <h3>Výpočet</h3>
+      <div class="formula">indikátor  → převod na 0–100
+  FH podkategorie: body / 4 × 100
+  V-Dem index:     hodnota × 100
+  EIU:             hodnota × 10
+  RSF, TI CPI:     beze změny
+oblast     = průměr indikátorů
+celkem     = Σ (váha × oblast) / Σ vah</div>
+      <p class="small muted">Trend indexů = změna oproti minulému vydání. Trend signálů = součet dopadů událostí za posledních 12 měsíců (−1 / 0 / +1). Míra jistoty vychází z počtu nezávislých zdrojů a rozptylu jejich hodnot.</p>
+      <h3 style="margin-top:8px">Pásma režimů</h3>
+      <div class="thresholds" id="thresholds"></div>
+      <div class="note"><b>Limity měření.</b> Indexy popisují rok 2025 a na vývoj reagují se zpožděním. Některé oblasti (neziskovky, vzdělání) pokrývá zatím jen jeden indikátor, takže skóre 100 znamená „žádný problém podle Freedom House v roce 2025“, ne dokonalý stav. Hodnoty V-Dem a EIU (u Německa a Slovenska i RSF) jsou převzaty z přehledů na Wikipedii. Bodové skóre WJP je z agregátoru statranker.org. Před ostrým spuštěním je ověříme v původních datech. Freedom House v roce 2026 zveřejnil jen zkrácené zprávy, takže u některých změn skóre neuvádí důvod.</div>
+    </div>
+    <div class="panel">
+      <h3>Nastavte si váhy</h3>
+      <p class="small muted">Považujete některou oblast za důležitější? Posuňte váhu a celkové skóre se přepočítá.</p>
+      <div class="weights" id="weights"></div>
+      <button class="btn" id="reset-w" type="button">Obnovit výchozí váhy</button>
+    </div>
+    <div class="panel" style="grid-column:1/-1">
+      <h3>Metodika důvěryhodnosti</h3>
+      <p class="muted small" style="max-width:75ch">Vychází z principů aplikace Verifee, která u textů hodnotí důvěryhodnost a hledá manipulativní techniky. Kritéria jsme přizpůsobili hodnocení zdrojů dat. Demokratometr s aplikací Verifee není propojen.</p>
+      <ul class="crit-list">
+        <li><b>Transparentnost</b><span>Je známý autor, financování a zveřejněná metodika?</span></li>
+        <li><b>Doložitelnost</b><span>Lze hodnotu dohledat v primárních datech a ověřit?</span></li>
+        <li><b>Nezávislost</b><span>Nemá zdroj střet zájmů nebo vazbu na hodnocenou moc?</span></li>
+        <li><b>Věcnost jazyka</b><span>Popisuje fakta bez emočního zabarvení, nálepkování a manipulativních technik?</span></li>
+        <li><b>Shoda zdrojů</b><span>Potvrzují závěr i jiné, nezávislé zdroje?</span></li>
+        <li><b>Aktuálnost</b><span>Jak stará jsou data a jak často se aktualizují?</span></li>
+      </ul>
+      <p class="small">Štítek: <span class="cred c-h">Vysoká</span> 5–6 kritérií · <span class="cred c-m">Střední</span> 3–4 · <span class="cred c-l">Nízká</span> 0–2. Sekundární zdroje (např. Wikipedie) nikdy nedostanou vysokou důvěryhodnost, i když odkazují na kvalitní primární data.</p>
+    </div>
+  </div>
+</section>
+
+<section id="slovnik" aria-labelledby="h-gl">
+  <div class="sec-head">
+    <span class="eyebrow">Slovník</span>
+    <h2 id="h-gl">Pojmy, které se vyplatí znát</h2>
+  </div>
+  <label for="gl-q" class="eyebrow" style="display:block;margin-bottom:8px">Hledat pojem</label>
+  <input id="gl-q" class="gl-search" type="search" placeholder="např. oligarchie, právní stát…" autocomplete="off">
+  <div class="gl" id="gl"></div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <p><b>Demokratometr</b> je nestranný prototyp. Hodnotí stav institucí a pravidel, ne politické strany ani osoby.</p>
+  <p>Našli jste chybu nebo novější data? Každá oprava bude zapsána do veřejného seznamu změn s datem a zdrojem.</p>
+  <p class="small muted">Verze 0.2 · poslední aktualizace 24. 9. 2026 · Změny: přidáno Německo a Slovensko, srovnání států, skóre WJP v oblasti soudů</p>
+</footer>
+
+<div id="tip" role="tooltip" hidden></div>
+
+<script>
+/* ---------- DATA: státy ---------- */
+const C = {
+ cz:{name:'Česko',gen:'Česka',
+  head:'Česko je podle Demokratometru {R}. Směr je ale nejistý.',
+  lede:'Mezinárodní indexy hodnotí Česko za rok 2025 vysoko a stabilně. Kroky vlády z roku 2026 ale v indexech ještě nejsou. Týkají se hlavně veřejnoprávních médií, <button class="term" data-term="Občanská společnost">neziskového sektoru</button> a <button class="term" data-term="Střet zájmů">střetu zájmů</button>. Proto je měříme zvlášť jako <b>signály</b>.',
+  idx:{dir:'flat',label:'Stabilní',detail:'FH 95/100 beze změny, EIU a CPI mírně výš, RSF o příčku níž'},
+  conf:'<b>Míra jistoty: střední.</b> Zdroje se shodují na zařazení (FH „svobodná země“, EIU „úplná demokracie“). U 2 oblastí máme jen jeden indikátor.',
+  fh:{A:12,B:15,B3:4,B4:3,C1:4,C2:3,C3:3,D1:4,D2:4,D3:4,D4:4,E1:4,E2:4,E3:4,F1:4,F2:4,F3:4,F4:3,G13:12,G4:3,tot:95},
+  vd:{edi:.85,ldi:.79,lib:.95,egal:.91,part:.59,delib:.81},
+  eiu:{tot:8.15,rank:23,type:'úplná demokracie',ep:9.58,fg:6.43,pp:7.78,pc:7.50,cl:9.12},
+  rsf:{score:83.01,rank:11,prev:10}, cpi:{score:59,rank:39}, wjp:{score:.74,rank:20},
+  ev:[
+   {d:'2025-10',t:'Sněmovní volby: Freedom House je hodnotí jako svobodné a férové (A2 4/4)',dir:1,dom:['volby'],src:'FH'},
+   {d:'2026-01-05',t:'Programové prohlášení vlády: přísnější dohled nad neziskovkami, označování „politických neziskovek“ a organizací financovaných ze zahraničí; „vzdělávání bez politických neziskovek“',dir:-1,dom:['ngo','vzdel'],src:'CT24'},
+   {d:'2026-01-15',t:'Vláda Andreje Babiše získala důvěru Poslanecké sněmovny (108 : 91)',dir:0,dom:['vlad'],src:'WIKICZ'},
+   {d:'2026-01-27',t:'Prezident Pavel označil SMS od ministra zahraničí Macinky za vydírání a zvažoval trestní oznámení',dir:-1,dom:['inst'],src:'WIKICZ'},
+   {d:'2026-02-01',t:'Tisíce lidí demonstrovaly na podporu prezidenta (Milion chvilek pro demokracii)',dir:1,dom:['verej'],src:'WIKICZ'},
+   {d:'2026-02-15',t:'Ministerstvo spravedlnosti zrušilo dotační programy za 9,2 mil. Kč, mj. na prevenci korupce (TI, Frank Bold, Oživení) a resocializaci',dir:-1,dom:['ngo','kor'],src:'IRO2'},
+   {d:'2026-02',t:'Babiš převedl Agrofert do svěřenského fondu; EK od února pozastavuje platby z kohezních fondů',dir:0,dom:['kor','konc'],src:'IRO1'},
+   {d:'2026-03-05',t:'Sněmovna nevydala premiéra Babiše k trestnímu stíhání v kauze dotace ve výši 2 mil. € (104 : 81)',dir:-1,dom:['soud','kor'],src:'WIKICZ'},
+   {d:'2026-03-21',t:'200–250 tisíc lidí na Letné varovalo před oslabováním demokracie a podpořilo veřejnoprávní média',dir:1,dom:['verej','media'],src:'WIKICZ'},
+   {d:'2026-04-22',t:'Studentské protesty po celé zemi proti změně financování ČT a ČRo',dir:1,dom:['verej','vzdel'],src:'WIKICZ'},
+   {d:'2026-04-30',t:'RSF: Česko kleslo na 11. místo; uvádí verbální útoky politiků na novináře a koncentraci mediálního trhu',dir:-1,dom:['media','info','konc'],src:'RSF'},
+   {d:'2026-06-22',t:'Tisíce zaměstnanců veřejnoprávních médií stávkovaly proti plánům na změnu financování',dir:0,dom:['media'],src:'WIKICZ'},
+   {d:'2026-06-23',t:'Prezident podal kompetenční žalobu na vládu kvůli vyřazení z delegace na summit NATO',dir:-1,dom:['inst'],src:'WIKICZ'},
+   {d:'2026-09-07',t:'Návrh zrušit poplatky ČT a ČRo a nahradit je 7,81 mld. Kč ze státního rozpočtu (o 1,4 mld. méně). Hrozí závislost na vládě a propouštění.',dir:-1,dom:['media','info'],src:'LUPA'},
+   {d:'2026-09-08',t:'Evropská komise: svěřenský fond střet zájmů premiéra neřeší; SZIF pozastavil Agrofertu 3,18 mil. € dotací',dir:-1,dom:['kor','konc'],src:'IRO1'},
+   {d:'2025',t:'WJP: v Česku poklesla svoboda projevu, shromažďování a občanská participace (celkový pokles < 1 %)',dir:-1,dom:['svob','verej'],src:'WJP'},
+   {d:'2025',t:'Index vnímání korupce: 59 bodů, mírné zlepšení, stále pod průměrem EU (62)',dir:1,dom:['kor'],src:'TI'}
+  ]},
+ de:{name:'Německo',gen:'Německa',
+  head:'Německo je podle Demokratometru {R}. Tlak roste na občanské svobody.',
+  lede:'Německo má z této trojice nejsilnější instituce: nezávislé soudy, fungující vládu a kvalitní veřejnou debatu. Freedom House mu ale za rok 2025 snížil občanské svobody z 60 na 55 bodů. Klesla náboženská svoboda, svoboda projevu, ochrana před násilím, rovné zacházení a rovnost příležitostí. RSF zaznamenalo pokles na 14. místo kvůli <button class="term" data-term="Polarizace">polarizaci</button> a útokům na novináře.',
+  idx:{dir:'down',label:'Mírný pokles',detail:'FH občanské svobody 60 → 55, RSF 11. → 14. místo, EIU beze změny, CPI +2'},
+  conf:'<b>Míra jistoty: vysoká.</b> Zdroje se shodují na zařazení (FH „svobodná země“, EIU „úplná demokracie“, WJP 6. místo na světě). Důvody poklesu u FH zkrácená zpráva neuvádí.',
+  fh:{A:12,B:16,B3:4,B4:4,C1:4,C2:4,C3:4,D1:4,D2:3,D3:4,D4:3,E1:4,E2:4,E3:4,F1:4,F2:4,F3:3,F4:3,G13:12,G4:3,tot:95},
+  vd:{edi:.83,ldi:.78,lib:.97,egal:.94,part:.66,delib:.98},
+  eiu:{tot:8.73,rank:13,type:'úplná demokracie',ep:9.58,fg:8.21,pp:8.33,pc:8.13,cl:9.41},
+  rsf:{score:82.17,rank:14,prev:11}, cpi:{score:77,rank:null}, wjp:{score:.83,rank:6},
+  ev:[
+   {d:'2025-02',t:'Předčasné spolkové volby: svobodné a férové (FH A 12/12), AfD výrazně posílila',dir:0,dom:['volby'],src:'HRW'},
+   {d:'2025-02',t:'CDU/CSU podala 551 parlamentních otázek na financování organizací občanské společnosti; ty to vnímají jako zastrašování kritiků krajní pravice',dir:-1,dom:['ngo'],src:'HRW'},
+   {d:'2025-05',t:'Spolkový úřad na ochranu ústavy (BfV) označil AfD za „potvrzeně pravicově extremistickou“ organizaci',dir:0,dom:['inst'],src:'HRW'},
+   {d:'2025',t:'Úřady omezovaly propalestinská shromáždění; komisař Rady Evropy kritizoval nepřiměřenou sílu policie a omezení akademické svobody',dir:-1,dom:['verej','svob','vzdel'],src:'HRW'},
+   {d:'2025',t:'Nová koalice CDU/CSU–SPD pozastavila slučování rodin části uprchlíků a ukončila humanitární přesídlování z Afghánistánu',dir:-1,dom:['svob'],src:'HRW'},
+   {d:'2025',t:'Freedom House: občanské svobody klesly z 60 na 55 (D2, D4, F3, F4, G4 vždy o 1 bod)',dir:-1,dom:['svob','soud','info'],src:'FH'},
+   {d:'2025',t:'Index vnímání korupce: 77 bodů (+2)',dir:1,dom:['kor'],src:'TI'},
+   {d:'2026-02-06',t:'RSF Německo: 55 ověřených útoků na novináře v roce 2025 (2024: 89); hlavní hrozby jsou polarizace, dezinformace a platformy',dir:0,dom:['media','info'],src:'RSFDE'},
+   {d:'2026-02-26',t:'Správní soud v Kolíně nad Rýnem předběžně pozastavil označení AfD za „potvrzeně extremistickou“. Soudní kontrola tajné služby funguje.',dir:1,dom:['soud'],src:'BSIG'},
+   {d:'2026-04-30',t:'RSF 2026: Německo kleslo z 11. na 14. místo (82,17 bodu)',dir:-1,dom:['media'],src:'RSF'}
+  ]},
+ sk:{name:'Slovensko',gen:'Slovenska',
+  head:'Slovensko je podle Demokratometru {R}. Indexy i události ukazují oslabování.',
+  lede:'Volby na Slovensku jsou dál svobodné. Vláda ale oslabuje protikorupční nástroje, veřejnoprávní médium a tlačí na soudy. Přes 20 % zákonů prošlo <button class="term" data-term="Zrychlené legislativní řízení">zrychleným řízením</button>. Pokles ukazují všechny hlavní indexy: EIU 7,21 → 6,94, WJP −2,3 %, FH 89 → 88. Ústavní soud část změn zastavil.',
+  idx:{dir:'down',label:'Pokles',detail:'EIU 7,21 → 6,94, WJP −2,3 %, FH 89 → 88, CPI 49 → 48'},
+  conf:'<b>Míra jistoty: střední.</b> Zdroje se v zařazení rozcházejí: FH „svobodná země“ (88), EIU „demokracie s nedostatky“ (6,94), V-Dem deliberativní složka jen 0,37. Rozptyl indikátorů je velký.',
+  fh:{A:12,B:15,B3:4,B4:3,C1:3,C2:2,C3:3,D1:3,D2:4,D3:4,D4:4,E1:4,E2:4,E3:4,F1:3,F2:3,F3:3,F4:3,G13:11,G4:3,tot:88},
+  vd:{edi:.73,ldi:.57,lib:.76,egal:.75,part:.64,delib:.37},
+  eiu:{tot:6.94,rank:48,type:'demokracie s nedostatky',ep:10,fg:6.07,pp:6.11,pc:5.63,cl:8.24},
+  rsf:{score:72.71,rank:37,prev:38}, cpi:{score:48,rank:null}, wjp:{score:.64,rank:36},
+  ev:[
+   {d:'2024-04',t:'Vláda zrušila RTVS a nahradila ji STVR; vedení ovlivňuje rada s členy jmenovanými koalicí',dir:-1,dom:['media','info'],src:'WIKISK'},
+   {d:'2025-02-07',t:'Asi 110 000 lidí ve 41 městech demonstrovalo, šlo o největší protesty od roku 2018',dir:1,dom:['verej'],src:'WIKISK'},
+   {d:'2025',t:'Přes 20 % zákonů prošlo zrychleným řízením bez připomínek veřejnosti; FH snížil C1 ze 4 na 3',dir:-1,dom:['vlad','inst'],src:'FH'},
+   {d:'2025-09-26',t:'Změna ústavy: uznává jen dvě pohlaví, omezuje práva párů stejného pohlaví a upřednostňuje „národní identitu“ v kulturně-etických otázkách. Benátská komise k návrhu vydala naléhavé stanovisko.',dir:-1,dom:['svob','inst'],src:'F24'},
+   {d:'2025-11-17',t:'Pozastavena ochrana oznamovatelů (whistleblowerů)',dir:-1,dom:['kor'],src:'WIKISK'},
+   {d:'2025-11-17',t:'Desetitisíce lidí na výročí 17. listopadu protestovaly proti vládě',dir:1,dom:['verej'],src:'WIKISK'},
+   {d:'2025-12-17',t:'Ústavní soud zrušil zákon o „transparentnosti“ neziskových organizací jako protiústavní',dir:1,dom:['ngo','soud'],src:'VIA'},
+   {d:'2025-12-27',t:'Novela trestního řádu (spolupracující obvinění) schválena jako přílepek; Ústavní soud pozastavil její účinnost',dir:-1,dom:['vlad','soud'],src:'VIA'},
+   {d:'2026-02',t:'Premiér Fico osobně napadl soudce Jána Hrubalu po odsouzení Jozefa Brhela za úplatkářství',dir:-1,dom:['soud','inst'],src:'VIA'},
+   {d:'2026-02',t:'Generální prokurátor: počet stíhaných podezřelých z korupce meziročně klesl o 70 %; po novele trestního zákoníku jsou tresty nižší a promlčecí lhůty kratší',dir:-1,dom:['kor','konc'],src:'VIA'},
+   {d:'2026-02',t:'Nový zákaz „hodnocení majetkových poměrů“ osob s pokutou až 50 000 € může odradit investigativní novináře',dir:-1,dom:['media','info'],src:'VIA'},
+   {d:'2025',t:'WJP: skóre právního státu kleslo o 2,3 % (36. místo ze 143)',dir:-1,dom:['soud'],src:'WJP'},
+   {d:'2025',t:'Index vnímání korupce: 48 bodů (−1), nejhůř z trojice',dir:-1,dom:['kor'],src:'TI'}
+  ]}
+};
+const ORDER=['cz','de','sk'];
+const FLAG={
+ cz:'<rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#D7141A"/><path d="M0 0 15 10 0 20Z" fill="#11457E"/>',
+ de:'<rect width="30" height="6.67" fill="#000"/><rect y="6.67" width="30" height="6.67" fill="#DD0000"/><rect y="13.33" width="30" height="6.67" fill="#FFCE00"/>',
+ sk:'<rect width="30" height="6.67" fill="#fff"/><rect y="6.67" width="30" height="6.67" fill="#0B4EA2"/><rect y="13.33" width="30" height="6.67" fill="#EE1C25"/><path d="M6.8 4.4h8.4v6.2c0 3.1-2.1 4.9-4.2 5.7-2.1-.8-4.2-2.6-4.2-5.7z" fill="#EE1C25" stroke="#fff" stroke-width=".8"/><rect x="10.6" y="5.6" width=".8" height="7.4" fill="#fff"/><rect x="9.3" y="7" width="3.4" height=".7" fill="#fff"/><rect x="8.7" y="8.8" width="4.6" height=".8" fill="#fff"/><path d="M7.4 12.4c.9-.8 1.7-.8 2.3 0 .5-1 1.9-1 2.6 0 .6-.8 1.4-.8 2.3 0-.5 1.6-2 2.8-3.6 3.4-1.6-.6-3.1-1.8-3.6-3.4z" fill="#0B4EA2"/>',
+ pl:'<rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#DC143C"/>',
+ at:'<rect width="30" height="20" fill="#ED2939"/><rect y="6.67" width="30" height="6.67" fill="#fff"/>',
+ hu:'<rect width="30" height="6.67" fill="#CE2939"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#477050"/>'
+};
+const flag=k=>`<span class="flag" aria-hidden="true"><svg viewBox="0 0 30 20" preserveAspectRatio="none">${FLAG[k]||'<rect width="30" height="20" fill="var(--line)"/>'}</svg></span>`;
+// Státy v přípravě: stačí doplnit do C a přesunout do ORDER.
+const SOON=[{k:'at',name:'Rakousko'},{k:'hu',name:'Maďarsko'},{k:'pl',name:'Polsko'}];
+const REGION={cz:'Střední Evropa',de:'Střední Evropa',sk:'Střední Evropa',at:'Střední Evropa',hu:'Střední Evropa',pl:'Střední Evropa'};
+const WINDOW_FROM='2025-09';
+
+/* ---------- oblasti a jejich indikátory ---------- */
+const f4=v=>v/4*100;
+const DOM=[
+ {id:'inst',name:'Instituce a dělba moci',sub:'kontrolní orgány, parlament, vláda, prezident',
+  ind:c=>[['Volení zástupci určují politiku (FH C1)',f4(c.fh.C1),c.fh.C1+'/4','FH'],['Liberální komponenta (V-Dem)',c.vd.lib*100,dc(c.vd.lib),'VD'],['Fungování vlády (EIU, 2024)',c.eiu.fg*10,dc(c.eiu.fg)+'/10','EIU']]},
+ {id:'soud',name:'Soudy a právní stát',sub:'nezávislost justice, rovnost před zákonem',
+  ind:c=>[['Nezávislá justice (FH F1)',f4(c.fh.F1),c.fh.F1+'/4','FH'],['Řádný proces (FH F2)',f4(c.fh.F2),c.fh.F2+'/4','FH'],['Rovné zacházení (FH F4)',f4(c.fh.F4),c.fh.F4+'/4','FH'],['Rule of Law Index (WJP 2025)',c.wjp.score*100,dc(c.wjp.score)+' · '+c.wjp.rank+'. místo','WJP']]},
+ {id:'volby',name:'Volby',sub:'svobodné a férové volby, pluralita',
+  ind:c=>[['Volební proces a pluralita (FH A+B)',(c.fh.A+c.fh.B)/28*100,(c.fh.A+c.fh.B)+'/28','FH'],['Volební proces (EIU, 2024)',c.eiu.ep*10,dc(c.eiu.ep)+'/10','EIU'],['Index volební demokracie (V-Dem)',c.vd.edi*100,dc(c.vd.edi),'VD']]},
+ {id:'media',name:'Média',sub:'svoboda tisku, veřejnoprávní média, vlastnictví',
+  ind:c=>[['Svoboda tisku (RSF 2026)',c.rsf.score,dc(c.rsf.score)+' · '+c.rsf.rank+'. místo','RSF'],['Svobodná a nezávislá média (FH D1)',f4(c.fh.D1),c.fh.D1+'/4','FH']]},
+ {id:'info',name:'Informační prostor',sub:'kvalita debaty, dezinformace, důvěra',
+  ind:c=>[['Deliberativní komponenta (V-Dem)',c.vd.delib*100,dc(c.vd.delib),'VD'],['Svoboda vyjádření bez strachu (FH D4)',f4(c.fh.D4),c.fh.D4+'/4','FH']]},
+ {id:'verej',name:'Veřejná sféra',sub:'shromažďování, participace, politická kultura',
+  ind:c=>[['Svoboda shromažďování (FH E1)',f4(c.fh.E1),c.fh.E1+'/4','FH'],['Participativní komponenta (V-Dem)',c.vd.part*100,dc(c.vd.part),'VD'],['Politická participace (EIU, 2024)',c.eiu.pp*10,dc(c.eiu.pp)+'/10','EIU'],['Politická kultura (EIU, 2024)',c.eiu.pc*10,dc(c.eiu.pc)+'/10','EIU']]},
+ {id:'ngo',name:'Neziskové organizace',sub:'prostor pro občanskou společnost',
+  ind:c=>[['Svoboda nevládních organizací (FH E2)',f4(c.fh.E2),c.fh.E2+'/4','FH']]},
+ {id:'vzdel',name:'Vzdělání a akademická svoboda',sub:'autonomie škol a univerzit',
+  ind:c=>[['Akademická svoboda (FH D3)',f4(c.fh.D3),c.fh.D3+'/4','FH']]},
+ {id:'svob',name:'Občanské svobody',sub:'projev, víra, pohyb, soukromí',
+  ind:c=>[['Náboženská svoboda (FH D2)',f4(c.fh.D2),c.fh.D2+'/4','FH'],['Osobní autonomie (FH G1–G3)',c.fh.G13/12*100,c.fh.G13+'/12','FH'],['Rovnost příležitostí (FH G4)',f4(c.fh.G4),c.fh.G4+'/4','FH'],['Občanské svobody (EIU, 2024)',c.eiu.cl*10,dc(c.eiu.cl)+'/10','EIU']]},
+ {id:'kor',name:'Korupce a transparentnost',sub:'střet zájmů, otevřenost vlády',
+  ind:c=>[['Index vnímání korupce (TI 2025)',c.cpi.score,c.cpi.score+'/100','TI'],['Ochrana proti korupci (FH C2)',f4(c.fh.C2),c.fh.C2+'/4','FH'],['Otevřenost a transparentnost (FH C3)',f4(c.fh.C3),c.fh.C3+'/4','FH']]},
+ {id:'konc',name:'Koncentrace moci',sub:'propojení politiky, byznysu a médií',
+  ind:c=>[['Volby bez nadvlády ekonomických elit (FH B3)',f4(c.fh.B3),c.fh.B3+'/4','FH'],['Ochrana proti korupci (FH C2)',f4(c.fh.C2),c.fh.C2+'/4','FH'],['Index vnímání korupce (TI 2025)',c.cpi.score,c.cpi.score+'/100','TI']]},
+ {id:'vlad',name:'Kvalita vládnutí',sub:'legislativní proces, efektivita, deliberace',
+  ind:c=>[['Fungování vlády (EIU, 2024)',c.eiu.fg*10,dc(c.eiu.fg)+'/10','EIU'],['Otevřenost vlády (FH C3)',f4(c.fh.C3),c.fh.C3+'/4','FH'],['Deliberativní komponenta (V-Dem)',c.vd.delib*100,dc(c.vd.delib),'VD']]}
+];
+DOM.forEach(d=>{d.w=1;d.def=1});
+function dc(n){return String(n).replace('.',',')}
+
+/* ---------- zdroje ---------- */
+const SRC = {
+  FH:{name:'Freedom House – Freedom in the World 2026',short:'Freedom House 2026',url:{cz:'https://freedomhouse.org/country/czechia/freedom-world/2026',de:'https://freedomhouse.org/country/germany/freedom-world/2026',sk:'https://freedomhouse.org/country/slovakia/freedom-world/2026'},measures:'Politická práva a občanské svobody (25 ukazatelů, 0–4 body)',
+      val:{cz:'95/100 · svobodná (PR 37/40, CL 58/60)',de:'95/100 · svobodná (PR 40/40, CL 55/60, loni 60)',sk:'88/100 · svobodná (PR 35/40, CL 53/60, loni 89)'},crit:[1,1,1,1,1,1],why:'Transparentní metodika a expertní hodnocení s recenzí. Data za rok 2025. Zprávy za rok 2026 jsou zkrácené a u některých změn skóre neuvádějí důvod.'},
+  VD:{name:'V-Dem – Democracy Report 2026 (data 2025)',short:'V-Dem 2026',url:'https://www.v-dem.net/documents/75/V-Dem_Institute_Democracy_Report_2026_lowres.pdf',measures:'Index liberální demokracie a dílčí komponenty (0–1), stovky expertů',
+      val:{cz:'LDI 0,79 · EDI 0,85',de:'LDI 0,78 · EDI 0,83',sk:'LDI 0,57 · EDI 0,73'},crit:[1,1,1,1,1,1],why:'Akademický projekt s otevřeným datasetem a měřením nejistoty. Konkrétní hodnoty jsme zatím převzali z přehledu na Wikipedii a ověříme je v datasetu v16.'},
+  EIU:{name:'Economist Intelligence Unit – Democracy Index 2025',short:'EIU 2025',url:'https://en.wikipedia.org/wiki/The_Economist_Democracy_Index',measures:'5 kategorií, 60 otázek, škála 0–10',
+      val:{cz:'8,15/10 · 23. místo · úplná demokracie',de:'8,73/10 · 13. místo · úplná demokracie',sk:'6,94/10 · 48. místo · demokracie s nedostatky (2024: 7,21)'},crit:[1,0,1,1,1,1],why:'Komerční analytická jednotka, metodika zveřejněná jen částečně a surová data nejsou volně k dispozici. Hodnoty jsou převzaty z Wikipedie, kategorie z vydání 2024.'},
+  RSF:{name:'Reportéři bez hranic – World Press Freedom Index 2026',short:'RSF 2026',url:{cz:'https://rsf.org/en/country-czechia',de:'https://en.wikipedia.org/wiki/World_Press_Freedom_Index',sk:'https://en.wikipedia.org/wiki/World_Press_Freedom_Index'},measures:'Svoboda tisku: politický, ekonomický, legislativní, sociální a bezpečnostní ukazatel',
+      val:{cz:'83,01 · 11. ze 180 (2025: 10.)',de:'82,17 · 14. ze 180 (2025: 11.)',sk:'72,71 · 37. ze 180 (2025: 38.)'},crit:[1,1,1,1,1,1],why:'Kombinuje dotazník expertů s počty útoků na novináře a hodnotí období únor 2025 – únor 2026. Hodnoty pro Německo a Slovensko jsou z přehledu na Wikipedii.'},
+  TI:{name:'Transparency International – Index vnímání korupce 2025',short:'TI CPI 2025',url:'https://www.transparency.cz/cpi2025/',measures:'Vnímání korupce ve veřejném sektoru (0–100)',
+      val:{cz:'59/100 · 39. ze 182 · průměr EU 62',de:'77/100 (+2) · průměr EU 62',sk:'48/100 (−1) · průměr EU 62'},crit:[1,1,1,1,0,1],why:'Měří vnímání, ne skutečný výskyt korupce. Je to složený index z 13 průzkumů.'},
+  WJP:{name:'World Justice Project – Rule of Law Index 2025',short:'WJP 2025',url:{cz:'https://worldjusticeproject.org/sites/default/files/documents/Czechia_1.pdf',de:'https://statranker.org/cities-urban-life/top-100-countries-by-rule-of-law-index-2025/',sk:'https://statranker.org/cities-urban-life/top-100-countries-by-rule-of-law-index-2025/'},measures:'Právní stát: 8 faktorů, průzkumy domácností a expertů',
+      val:{cz:'0,74 · 20. ze 143 · −0,1 %',de:'0,83 · 6. ze 143 · −0,1 %',sk:'0,64 · 36. ze 143 · −2,3 %'},crit:[1,1,1,1,1,1],why:'Robustní metodika. Pořadí ČR je z oficiálního profilu WJP. Bodová skóre všech tří států jsou z agregátoru statranker.org a čekají na ověření v datech WJP.'},
+  EK:{name:'Evropská komise – Zpráva o právním státu 2026',short:'EK 2026',url:'https://commission.europa.eu/publications/2026-rule-law-report-communication-and-country-chapters_en',measures:'Justice, protikorupční rámec, pluralita médií, brzdy a protiváhy',
+      val:{cz:'[DOPLNIT]',de:'[DOPLNIT]',sk:'[DOPLNIT]'},crit:[1,1,0,1,1,1],why:'Oficiální a podrobný zdroj. Nezávislost je dílčí, protože jde o politickou instituci EU. Kapitoly o jednotlivých státech doplníme v další verzi.'},
+  IRO1:{c:['cz'],name:'iROZHLAS – EK ke střetu zájmů (8. 9. 2026)',short:'iROZHLAS',url:'https://www.irozhlas.cz/zpravy-domov/stret-zajmu-andrej-babis-dotace-rsv_2609081434_tec',measures:'Událost',val:{cz:'Signál'},crit:[1,1,1,1,1,1],why:'Veřejnoprávní redakce, cituje mluvčí Evropské komise. Shoduje se s dalšími médii (HN, E15).'},
+  IRO2:{c:['cz'],name:'iROZHLAS – škrty dotací neziskovkám (15. 2. 2026)',short:'iROZHLAS',url:'https://www.irozhlas.cz/zpravy-domov/skrty-dotace-neziskove-organizace-ministerstvo-spravedlnosti-jeronym-tejc_2602150600_tec',measures:'Událost',val:{cz:'Signál'},crit:[1,1,1,1,0,1],why:'Veřejnoprávní redakce, uvádí vyjádření ministra i dotčených organizací.'},
+  CT24:{c:['cz'],name:'ČT24 – vláda a neziskové organizace (5. 1. 2026)',short:'ČT24',url:'https://ct24.ceskatelevize.cz/clanek/domaci/kabinet-chce-prisnejsi-dohled-nad-neziskovkami-prostor-pro-radikalni-skrty-je-ale-maly-368939',measures:'Událost',val:{cz:'Signál'},crit:[1,1,1,1,1,1],why:'Cituje programové prohlášení vlády a Národní rozpočtovou radu.'},
+  LUPA:{c:['cz'],name:'Lupa.cz – poplatky ČT a ČRo (7. 9. 2026)',short:'Lupa.cz',url:'https://www.lupa.cz/clanky/zacina-parlamentni-bitva-o-poplatky-jejich-zruseni-se-muze-odlozit/',measures:'Událost',val:{cz:'Signál'},crit:[1,1,1,1,1,1],why:'Odborný mediální server. Údaje odpovídají tiskové zprávě vlády.'},
+  WIKICZ:{c:['cz'],name:'Wikipedie – 2026 in the Czech Republic',short:'Wikipedie',url:'https://en.wikipedia.org/wiki/2026_in_the_Czech_Republic',measures:'Sekundární přehled událostí',val:{cz:'Pomocný zdroj'},crit:[0,1,0,1,0,1],why:'Sekundární a kdokoli ji může upravit. Slouží jen k nalezení událostí, které je nutné ověřit v primárním zdroji.'},
+  HRW:{c:['de'],name:'Human Rights Watch – World Report 2026: Germany',short:'HRW 2026',url:'https://www.hrw.org/world-report/2026/country-chapters/germany',measures:'Lidská práva v roce 2025',val:{de:'Signály za rok 2025'},crit:[1,1,1,1,1,1],why:'Mezinárodní lidskoprávní organizace s transparentní metodikou a výzkumem v terénu. Zaměřuje se na porušování práv, takže nevidí celkový obraz.'},
+  RSFDE:{c:['de'],name:'RSF – Focus 2026: stav svobody tisku v Německu',short:'RSF Německo',url:'https://rsf.org/en/press-freedom-under-pressure-germany-due-disinformation-political-polarisation-and-attacks',measures:'Útoky na novináře, hrozby',val:{de:'55 ověřených útoků (2025)'},crit:[1,1,1,1,1,1],why:'Primární zdroj s metodikou ověřování útoků.'},
+  BSIG:{c:['de'],name:'Brussels Signal – soud k AfD (26. 2. 2026)',short:'Brussels Signal',url:'https://brusselssignal.eu/2026/02/afd-avoids-immediate-ban-after-german-court-suspends-its-extremist-status/',measures:'Událost',val:{de:'Signál'},crit:[1,1,0,0,1,1],why:'Konzervativně profilované médium s hodnoticím jazykem. Samotný fakt rozhodnutí potvrzují i agentury (Reuters přes US News).'},
+  VIA:{c:['sk'],name:'VIA IURIS – Zeitgeist 17 (10. 3. 2026)',short:'VIA IURIS',url:'https://viaiuris.sk/en/news/olympics-did-not-slow-pm-fico-down-from-dismantling-the-rule-of-law-zeitgeist-17-2/',measures:'Právní stát na Slovensku',val:{sk:'Signály 2025–2026'},crit:[1,1,1,0,1,1],why:'Slovenská watchdogová organizace s právní expertízou. Je vůči vládě kritická a používá hodnoticí jazyk, fakta ale opírá o rozhodnutí soudů a data prokuratury.'},
+  F24:{c:['sk'],name:'France 24 – změna slovenské ústavy (26. 9. 2025)',short:'France 24',url:'https://www.france24.com/en/live-news/20250926-slovak-parliament-approves-anti-lgbtq-constitutional-change',measures:'Událost',val:{sk:'Signál'},crit:[1,1,1,1,1,1],why:'Agenturní zpráva, shoduje se s Al Jazeera, Euronews a stanoviskem Benátské komise.'},
+  WIKISK:{c:['sk'],name:'Wikipedie – 2024–2026 Slovak protests',short:'Wikipedie',url:'https://en.wikipedia.org/wiki/2024%E2%80%932026_Slovak_protests',measures:'Sekundární přehled událostí',val:{sk:'Pomocný zdroj'},crit:[0,1,0,1,0,1],why:'Sekundární a kdokoli ji může upravit. Slouží jen k nalezení událostí, které je nutné ověřit v primárním zdroji.'}
+};
+const srcUrl=(k,c)=>{const u=SRC[k].url;return typeof u==='string'?u:(u[c]||Object.values(u)[0])};
+
+/* ---------- typologie, deformace, slovník ---------- */
+const REG = [
+ {k:'lib',name:'Liberální demokracie',ins:'liberální demokracií',c:'--r1',min:80,def:'Svobodné volby a k tomu ochrana práv jednotlivce, nezávislé soudy a účinné brzdy a protiváhy vůči moci.',sig:'Opozice, média i soudy mohou vládu účinně kontrolovat.',ex:'Skandinávské země, Švýcarsko',warn:'Útoky na nezávislé instituce, zúžení veřejnoprávních médií.'},
+ {k:'vol',name:'Volební demokracie',ins:'volební demokracií',c:'--r2',min:65,def:'Volby jsou svobodné a férové, ale liberální pilíře (právní stát, kontrola moci, práva menšin) jsou slabší.',sig:'Vítěz voleb má menší omezení mezi volbami.',ex:'Řada nových demokracií',warn:'Vláda obchází parlament, oslabuje kontrolní orgány.'},
+ {k:'nelib',name:'Neliberální demokracie',ins:'neliberální demokracií',c:'--r3',min:55,def:'Většina vládne bez respektu k menšinám a nezávislým institucím. Volby se konají, ale hřiště se naklání.',sig:'Rétorika „vůle lidu“ proti soudům, médiím a neziskovkám.',ex:'Maďarsko kolem roku 2014 (termín „illiberální stát“ použil Viktor Orbán)',warn:'Personální čistky, zákony proti „zahraničním agentům“.'},
+ {k:'hyb',name:'Hybridní režim',ins:'hybridním režimem',c:'--r4',min:45,def:'Kombinace demokratických a autoritářských prvků. Volby probíhají s vážnými nesrovnalostmi.',sig:'Tlak na opozici a novináře, justice pod vlivem vlády.',ex:'Podle EIU např. některé balkánské státy',warn:'Kontrola hlavních médií, selektivní stíhání.'},
+ {k:'sout',name:'Soutěživý autoritarismus',ins:'soutěživým autoritarismem',c:'--r5',min:35,def:'Soutěž existuje, ale vláda systematicky zneužívá státní moc a zdroje, takže opozice téměř nemůže vyhrát.',sig:'Formální pravidla zůstávají, praxe je autoritářská.',ex:'Pojem S. Levitského a L. Waye',warn:'Vyřazování kandidátů, zatýkání aktivistů.'},
+ {k:'volaut',name:'Volební autokracie',ins:'volební autokracií',c:'--r6',min:20,def:'Volby se konají, ale nejsou svobodné ani férové. Chybí skutečné dělení moci.',sig:'Výsledek voleb je předem daný.',ex:'Podle V-Dem např. Rusko',warn:'Cenzura, pronásledování opozice.'},
+ {k:'uzav',name:'Uzavřená autokracie',ins:'uzavřenou autokracií',c:'--r7',min:0,def:'Vládce nebo strana vládne bez soutěživých voleb a bez institucionální kontroly.',sig:'Žádná legální opozice, řízená média.',ex:'Podle V-Dem např. Severní Korea',warn:'–'}
+];
+const DEF = [
+ ['Oligarchie','Vláda úzké skupiny, obvykle bohatých a vlivných lidí, kteří ovládají politiku i ekonomiku.','Měřit lze přes koncentraci vlastnictví médií, střety zájmů a financování stran.'],
+ ['Plutokracie','Moc odvozená přímo od bohatství. Peníze rozhodují o politice.','Financování kampaní, lobbing, FH B3.'],
+ ['Kakistokracie','„Vláda nejhorších“: moc drží lidé nekompetentní nebo bezohlední.','Kvalita legislativy, rušené zákony, odbornost jmenovaných (EIU fungování vlády).'],
+ ['Technokracie','Rozhodují experti místo volených politiků, často s oslabenou demokratickou kontrolou.','Podíl neparlamentních rozhodnutí, úřednické vlády.'],
+ ['Kleptokracie','Moc slouží k rozkrádání veřejných zdrojů.','CPI, WJP absence korupce, audity nejvyšších kontrolních úřadů.'],
+ ['Populismus','Styl politiky, který staví „čistý lid“ proti „zkorumpovaným elitám“ a odmítá pluralitu.','Analýza rétoriky, útoky na instituce (V-Dem, PopuList).'],
+ ['Partitokracie','Stranická příslušnost rozhoduje o obsazení státu včetně nezávislých úřadů.','Politizace jmenování, státní správa.'],
+ ['Teokracie','Politická moc je odvozena od náboženské autority.','FH D2, oddělení státu a církve.']
+];
+const GL = [
+ ['Demokracie','Způsob vlády, kde moc pochází od občanů. Ti volí zástupce a mohou je v dalších volbách vyměnit.','Klíčové je i to, co se děje mezi volbami: kontrola moci a ochrana práv.'],
+ ['Liberální demokracie','Demokracie, která k volbám přidává ochranu práv jednotlivce, nezávislé soudy a omezení moci většiny.','Viz V-Dem Liberal Democracy Index.'],
+ ['Neliberální demokracie','Režim, kde se konají volby, ale vítěz oslabuje soudy, média a práva menšin.','Termín zpopularizoval Fareed Zakaria (1997).'],
+ ['Autokracie','Vláda jednoho člověka nebo skupiny bez účinné kontroly a bez skutečně svobodných voleb.','Dělí se na volební a uzavřené.'],
+ ['Autokratizace','Postupný proces, kdy se demokracie mění v autokracii. Často legálně, krok za krokem.','V-Dem sleduje „epizody autokratizace“.'],
+ ['Právní stát','Všichni včetně vlády podléhají stejným zákonům, které vymáhají nezávislé soudy.','Anglicky „rule of law“.'],
+ ['Dělba moci','Rozdělení moci na zákonodárnou, výkonnou a soudní, aby se navzájem kontrolovaly.','Pochází od Montesquieua.'],
+ ['Brzdy a protiváhy','Mechanismy, kterými se instituce navzájem omezují, například veto, ústavní soud nebo kontrolní úřad.','„Checks and balances“.'],
+ ['Občanská společnost','Spolky, neziskové organizace, iniciativy a odbory. Lidé se v nich organizují nezávisle na státu.','Její prostor sleduje např. CIVICUS Monitor.'],
+ ['Střet zájmů','Situace, kdy veřejný činitel může svým rozhodnutím ovlivnit vlastní soukromý prospěch.','V ČR upravuje zákon o střetu zájmů, v EU finanční nařízení.'],
+ ['Pluralita médií','Existence mnoha nezávislých médií s různými vlastníky a názory.','Měří ji Media Pluralism Monitor.'],
+ ['Veřejnoprávní média','Média financovaná veřejností a nezávislá na vládě, v ČR Česká televize a Český rozhlas, na Slovensku STVR, v Německu ARD, ZDF a Deutschlandradio.','Způsob financování ovlivňuje jejich nezávislost.'],
+ ['Dezinformace','Nepravdivá informace šířená záměrně, aby klamala.','Od misinformace se liší záměrem.'],
+ ['Polarizace','Rozdělení společnosti do nepřátelských táborů, které si přestávají důvěřovat.','V-Dem měří polarizaci společnosti.'],
+ ['Akademická svoboda','Svoboda učit, zkoumat a publikovat bez politických zásahů.','Měří ji Academic Freedom Index.'],
+ ['Oligarchie','Vláda úzké skupiny bohatých a vlivných, kteří propojují ekonomickou a politickou moc.','Viz Deformace vládnutí.'],
+ ['Kakistokracie','Vláda nejméně schopných nebo nejméně bezúhonných.','Z řečtiny: kakistos = nejhorší.'],
+ ['Technokracie','Vláda odborníků, u které odbornost nahrazuje demokratický mandát.','Např. úřednické vlády.'],
+ ['Imunita','Ochrana poslanců před trestním stíháním bez souhlasu komory.','Sněmovna může poslance vydat ke stíhání.'],
+ ['Kompetenční žaloba','Spor mezi státními orgány o to, komu patří určitá pravomoc. Rozhoduje Ústavní soud.','V ČR podle čl. 87 Ústavy.'],
+ ['Zrychlené legislativní řízení','Schvalování zákonů bez běžného připomínkového řízení a s kratší debatou. Má sloužit jen pro mimořádné situace.','Časté užívání oslabuje kontrolu a kvalitu zákonů (FH C1).'],
+ ['Benátská komise','Poradní orgán Rady Evropy pro ústavní právo. Posuzuje, zda změny ústav a zákonů odpovídají evropským standardům.','Její stanoviska nejsou závazná, ale mají velkou váhu.'],
+ ['Obranyschopná demokracie','Princip, že demokracie se smí bránit proti těm, kdo ji chtějí odstranit, například sledováním nebo zákazem protiústavních stran.','Německy „wehrhafte Demokratie“, v Německu ústavní princip.'],
+ ['Přílepek','Pozměňovací návrh, který nesouvisí s projednávaným zákonem a obchází tak běžný legislativní proces.','Ústavní soudy přílepky opakovaně rušily.']
+];
+
+/* ---------- výpočty ---------- */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n=>(Math.round(n*10)/10).toLocaleString('cs-CZ');
+const regimeOf = s=>REG.find(r=>s>=r.min);
+function domData(ck){
+  const c=C[ck];
+  return DOM.map(d=>{const ind=d.ind(c);const v=ind.map(i=>i[1]);
+    const ev=c.ev.filter(e=>e.dom.includes(d.id));
+    const sig=ev.filter(e=>e.d>=WINDOW_FROM).reduce((a,e)=>a+e.dir,0);
+    return {...d,indv:ind,score:v.reduce((a,b)=>a+b,0)/v.length,min:Math.min(...v),max:Math.max(...v),ev,sig}});
+}
+function overallOf(ck){const dd=domData(ck);const sw=DOM.reduce((a,d)=>a+d.w,0)||1;return dd.reduce((a,d,i)=>a+DOM[i].w*d.score,0)/sw}
+
+let cur='cz';
+try{const s=localStorage.getItem('dm-country');if(C[s])cur=s}catch(e){}
+
+function trendChip(s){
+  if(s<=-2) return '<span class="trend-chip t-down">↘ zhoršení</span>';
+  if(s===-1) return '<span class="trend-chip t-down">↘ mírné riziko</span>';
+  if(s>=1) return '<span class="trend-chip t-up">↗ posílení</span>';
+  return '<span class="trend-chip t-flat">→ beze změny</span>';
+}
+function srcLink(k){return `<a href="${esc(srcUrl(k,cur))}" target="_blank" rel="noopener">${esc(SRC[k].short)}</a>`}
+function fmtDate(d){
+  const p=d.split('-');
+  if(p.length===1) return 'rok '+p[0];
+  const m=['leden','únor','březen','duben','květen','červen','červenec','srpen','září','říjen','listopad','prosinec'];
+  if(p.length===2) return m[+p[1]-1]+' '+p[0];
+  return (+p[2])+'. '+(+p[1])+'. '+p[0];
+}
+
+function renderDomains(){
+  const dd=domData(cur);
+  const openIds=[...document.querySelectorAll('.dom[data-open="1"]')].map(x=>x.dataset.id);
+  $('#dom-list').innerHTML=dd.map(d=>{const open=openIds.includes(d.id);return `
+  <div class="dom" data-id="${d.id}" data-open="${open?1:0}">
+    <button type="button" aria-expanded="${open}" aria-controls="det-${d.id}">
+      <span class="dom-n"><span class="dom-name">${esc(d.name)}</span><br><span class="dom-sub">${esc(d.sub)}</span></span>
+      <span class="scale" aria-hidden="true"><span class="track"></span><span class="range" style="left:${d.min}%;width:${Math.max(d.max-d.min,1.2)}%"></span><span class="pt" style="left:${d.score}%"></span></span>
+      <span class="dom-score" aria-label="Skóre ${fmt(d.score)} ze 100">${Math.round(d.score)}</span>
+      ${trendChip(d.sig)}
+      <svg class="chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="dom-detail" id="det-${d.id}" ${open?'':'hidden'}>
+      <div><h4>Indikátory (${d.indv.length})</h4>${d.indv.map(i=>`<div class="ind"><span>${esc(i[0])}</span><span class="v">${esc(i[2])} → ${fmt(i[1])}</span><span class="s">Zdroj: ${srcLink(i[3])}</span></div>`).join('')}
+        ${d.indv.length<2?'<p class="small" style="margin-top:10px;color:var(--warn)">Nízké pokrytí: jen jeden indikátor. Skóre berte jako orientační.</p>':''}</div>
+      <div><h4>Signály a události</h4>${d.ev.length?d.ev.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(e=>`<div class="sig"><span class="${e.dir<0?'down':e.dir>0?'up':'flat'} mono" aria-label="${e.dir<0?'riziko':e.dir>0?'posílení':'neutrální'}">${e.dir<0?'↘':e.dir>0?'↗':'→'}</span><span>${esc(e.t)}<br><span class="s">${esc(fmtDate(e.d))} · ${srcLink(e.src)}${e.d>=WINDOW_FROM?'':' · mimo 12měsíční okno'}</span></span></div>`).join(''):'<p class="small muted">Zatím bez zaznamenaných událostí.</p>'}</div>
+    </div>
+  </div>`}).join('');
+  document.querySelectorAll('.dom > button').forEach(b=>b.addEventListener('click',()=>{
+    const p=b.parentElement, open=p.dataset.open==='1';
+    p.dataset.open=open?'0':'1'; b.setAttribute('aria-expanded',String(!open));
+    p.querySelector('.dom-detail').hidden=open;
+  }));
+}
+
+let needleAng=-90;
+function drawGauge(score){
+  const g=$('#gauge'), cx=170, cy=172, r=138, sw=22;
+  const pt=(s,rr)=>{const a=Math.PI*(1-s/100);return [cx+rr*Math.cos(a),cy-rr*Math.sin(a)]};
+  const bands=[[0,20,'--r7'],[20,35,'--r6'],[35,45,'--r5'],[45,55,'--r4'],[55,65,'--r3'],[65,80,'--r2'],[80,100,'--r1']];
+  let h='<title id="gauge-desc">Budík skóre demokracie: '+fmt(score)+' ze 100</title>';
+  bands.forEach(([a,b,c])=>{const [x1,y1]=pt(a,r),[x2,y2]=pt(b,r);h+=`<path d="M${x1} ${y1} A${r} ${r} 0 0 1 ${x2} ${y2}" fill="none" stroke="var(${c})" stroke-width="${sw}" opacity=".9"/>`});
+  const major=[0,20,35,45,55,65,80,100];
+  major.forEach(t=>{const [x1,y1]=pt(t,r+sw/2+2),[x2,y2]=pt(t,r+sw/2+8);h+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ink-3)" stroke-width="1.2"/>`;const [tx,ty]=pt(t,r+sw/2+18);h+=`<text x="${tx}" y="${ty+4}" font-size="11" text-anchor="middle" fill="var(--ink-3)">${t}</text>`});
+  for(let t=0;t<=100;t+=5){if(major.includes(t))continue;const [x1,y1]=pt(t,r-sw/2-3),[x2,y2]=pt(t,r-sw/2-8);h+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line)" stroke-width="1"/>`}
+  const ang=-90+180*score/100;
+  h+=`<g id="needle" style="transform-origin:${cx}px ${cy}px;transform:rotate(${needleAng}deg)"><path d="M${cx-5} ${cy} L${cx} ${cy-r+18} L${cx+5} ${cy} Z" fill="var(--ink)"/></g><circle cx="${cx}" cy="${cy}" r="10" fill="var(--ink)"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--paper)"/>`;
+  g.innerHTML=h;
+  needleAng=ang;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const n=$('#needle');if(n)n.style.transform=`rotate(${ang}deg)`}));
+}
+
+function renderSummary(){
+  const c=C[cur], s=overallOf(cur), rg=regimeOf(s);
+  $('#h-hero').textContent=c.head.replace('{R}',rg.ins);
+  $('#lede').innerHTML=c.lede;
+  $('#score').innerHTML=Math.round(s)+'<small>/100</small>';
+  const pill=$('#regime-pill');
+  pill.textContent=rg.name; pill.style.background=`color-mix(in srgb, var(${rg.c}) 16%, var(--paper))`; pill.style.color=`var(${rg.c})`;
+  const ar={flat:'→',down:'↘',up:'↗'}[c.idx.dir];
+  $('#idx-val').innerHTML=`<span class="arrow ${c.idx.dir}" aria-hidden="true">${ar}</span>${esc(c.idx.label)}`;
+  $('#idx-detail').textContent=c.idx.detail;
+  const win=c.ev.filter(e=>e.d>=WINDOW_FROM), neg=win.filter(e=>e.dir<0).length, pos=win.filter(e=>e.dir>0).length;
+  const sd=neg-pos>=2?['down','↘','Zhoršení']:pos>neg?['up','↗','Posílení']:['flat','→','Smíšené'];
+  $('#sig-val').innerHTML=`<span class="arrow ${sd[0]}" aria-hidden="true">${sd[1]}</span>${sd[2]}`;
+  const under=domData(cur).filter(d=>d.sig<0).length;
+  const pl=(n,a,b,c)=>n===1?a:(n>=2&&n<=4?b:c);
+  $('#sig-count').textContent=`${neg} ${pl(neg,'riziková','rizikové','rizikových')} a ${pos} ${pl(pos,'posilující','posilující','posilujících')} ${pl(pos,'událost','události','událostí')}, ${under} z 12 oblastí pod tlakem`;
+  $('#conf').innerHTML=c.conf;
+  drawGauge(s);
+  $('#spec-markers').innerHTML=ORDER.map(k=>`<div class="spec-marker ${k===cur?'':'other'}" style="left:${overallOf(k)}%">${flag(k)}${k===cur?esc(C[k].name):''}</div>`).join('');
+  document.querySelectorAll('.regime').forEach(el=>{const here=el.dataset.k===rg.k;el.dataset.here=here?'1':'0';const h=el.querySelector('.here');h.hidden=!here;h.textContent=c.name});
+  $('#src-country').textContent=c.name;
+  renderCompare();
+}
+
+function renderCompare(){
+  const dds=Object.fromEntries(ORDER.map(k=>[k,domData(k)]));
+  const cell=(k,v,txt)=>`<td class="cell ${k===cur?'cur':''}"><div class="mini"><span class="bar"><i style="width:${Math.max(0,Math.min(100,v))}%"></i></span><span class="num">${txt??Math.round(v)}</span></div></td>`;
+  let h=`<thead><tr><th>Oblast</th>${ORDER.map(k=>`<th class="${k===cur?'cur':''}"><button type="button" class="fbtn" data-c="${k}" aria-pressed="${k===cur}">${flag(k)}${esc(C[k].name)}</button></th>`).join('')}</tr></thead><tbody>`;
+  DOM.forEach((d,i)=>{h+=`<tr><th scope="row">${esc(d.name)}</th>${ORDER.map(k=>cell(k,dds[k][i].score)).join('')}</tr>`});
+  h+=`<tr class="total"><th scope="row">Celkové skóre</th>${ORDER.map(k=>{const s=overallOf(k);return `<td class="cell ${k===cur?'cur':''}"><div class="mini"><span class="bar"><i style="width:${s}%"></i></span><span class="num">${Math.round(s)}</span></div><div class="small" style="font-weight:500;margin-top:4px">${esc(regimeOf(s).name)}</div></td>`}).join('')}</tr>`;
+  h+=`<tr class="sep"><th colspan="4">Zdrojové indexy</th></tr>`;
+  const rows=[
+    ['Freedom House 2026',k=>C[k].fh.tot,k=>C[k].fh.tot+'/100'],
+    ['V-Dem LDI',k=>C[k].vd.ldi*100,k=>dc(C[k].vd.ldi)],
+    ['EIU 2025',k=>C[k].eiu.tot*10,k=>dc(C[k].eiu.tot)],
+    ['RSF 2026',k=>C[k].rsf.score,k=>C[k].rsf.rank+'.'],
+    ['TI CPI 2025',k=>C[k].cpi.score,k=>C[k].cpi.score],
+    ['WJP 2025',k=>C[k].wjp.score*100,k=>C[k].wjp.rank+'.']
+  ];
+  rows.forEach(r=>{h+=`<tr><th scope="row">${r[0]}</th>${ORDER.map(k=>cell(k,r[1](k),r[2](k))).join('')}</tr>`});
+  h+='</tbody>';
+  $('#cmp').innerHTML=h;
+  $('#cmp').querySelectorAll('button[data-c]').forEach(b=>b.addEventListener('click',()=>setCountry(b.dataset.c)));
+}
+
+function renderRegimes(){
+  $('#regimes').innerHTML=REG.map(r=>`<article class="regime" data-k="${r.k}"><span class="sw" style="background:var(${r.c})"></span><span class="here" hidden></span><h3>${esc(r.name)}</h3><p class="small">${esc(r.def)}</p><dl><div><dt>Typický znak</dt><dd>${esc(r.sig)}</dd></div><div><dt>Příklad</dt><dd>${esc(r.ex)}</dd></div><div><dt>Varovné signály</dt><dd>${esc(r.warn)}</dd></div></dl></article>`).join('');
+  $('#deform').innerHTML=DEF.map(d=>`<div><b>${esc(d[0])}</b><span class="small">${esc(d[1])}</span><span class="m">Jak měřit: ${esc(d[2])}</span></div>`).join('');
+  $('#thresholds').innerHTML=REG.map((r,i)=>`<div><i style="background:var(${r.c})"></i><span class="mono">${r.min}–${i===0?100:REG[i-1].min}</span><span>${esc(r.name)}</span></div>`).join('');
+}
+
+let filt='all';
+function renderTimeline(){
+  const c=C[cur];
+  const opts=[['all','Vše']].concat(DOM.filter(d=>c.ev.some(e=>e.dom.includes(d.id))).map(d=>[d.id,d.name]));
+  if(!opts.some(o=>o[0]===filt)) filt='all';
+  $('#filters').innerHTML=opts.map(o=>`<button type="button" class="fbtn" aria-pressed="${o[0]===filt}" data-f="${o[0]}">${esc(o[1])}</button>`).join('');
+  document.querySelectorAll('#filters .fbtn').forEach(b=>b.addEventListener('click',()=>{filt=b.dataset.f;renderTimeline()}));
+  const items=c.ev.filter(e=>filt==='all'||e.dom.includes(filt)).slice().sort((a,b)=>b.d.localeCompare(a.d));
+  $('#timeline').innerHTML=items.map(e=>`<div class="tl-item" data-d="${e.dir}"><span class="tl-date">${esc(fmtDate(e.d))}</span><div class="tl-body"><span>${esc(e.t)}</span><div class="tl-tags">${e.dom.map(id=>`<span class="tag">${esc(DOM.find(d=>d.id===id).name)}</span>`).join('')}<span class="small muted">Zdroj: ${srcLink(e.src)} ${credBadge(e.src)}</span></div></div></div>`).join('');
+  $('#h-ud').textContent='Signály, které indexy zatím nezachytily – '+c.name;
+}
+
+function credLevel(k){const n=SRC[k].crit.reduce((a,b)=>a+b,0);let l=n>=5?'h':n>=3?'m':'l';if(k.startsWith('WIKI')&&l==='h')l='m';return [l,n]}
+function credBadge(k){const [l]=credLevel(k);return `<span class="cred c-${l}">${l==='h'?'Vysoká':l==='m'?'Střední':'Nízká'}</span>`}
+function renderSources(){
+  const labels=['Transparentnost','Doložitelnost','Nezávislost','Věcnost','Shoda zdrojů','Aktuálnost'];
+  $('#src-body').innerHTML=Object.keys(SRC).filter(k=>!SRC[k].c||SRC[k].c.includes(cur)).map(k=>{const s=SRC[k];const [l,n]=credLevel(k);return `<tr><td><a href="${esc(srcUrl(k,cur))}" target="_blank" rel="noopener"><b>${esc(s.name)}</b></a></td><td class="small">${esc(s.measures)}</td><td class="small mono">${esc(s.val[cur]||'–')}</td><td><div style="display:grid;gap:6px">${credBadge(k)}<span class="crit" aria-label="${n} ze 6 kritérií">${s.crit.map((c,i)=>`<i class="${c?'on':''}" title="${labels[i]}: ${c?'splněno':'nesplněno'}"></i>`).join('')}</span><details class="why"><summary>Proč?</summary><p>${esc(s.why)}</p></details></div></td></tr>`}).join('');
+}
+
+function renderWeights(){
+  $('#weights').innerHTML=DOM.map(d=>`<div class="w-row"><label for="w-${d.id}">${esc(d.name)}</label><input id="w-${d.id}" type="range" min="0" max="3" step="0.5" value="${d.w}"><output for="w-${d.id}" id="wo-${d.id}">${dc(d.w)}×</output></div>`).join('');
+  DOM.forEach(d=>{$('#w-'+d.id).addEventListener('input',e=>{d.w=+e.target.value;$('#wo-'+d.id).textContent=dc(d.w)+'×';renderSummary()})});
+}
+$('#reset-w').addEventListener('click',()=>{DOM.forEach(d=>d.w=d.def);renderWeights();renderSummary()});
+
+function renderGlossary(q=''){
+  const n=q.trim().toLowerCase();
+  const seen=new Set();
+  const items=GL.filter(g=>{if(seen.has(g[0]))return false;seen.add(g[0]);return !n||(g[0]+' '+g[1]).toLowerCase().includes(n)}).sort((a,b)=>a[0].localeCompare(b[0],'cs'));
+  $('#gl').innerHTML=items.length?items.map(g=>`<div class="gl-item"><b>${esc(g[0])}</b><span>${esc(g[1])}</span><span class="ex">${esc(g[2])}</span></div>`).join(''):'<p class="muted">Pojem jsme nenašli. Zkuste jiné slovo.</p>';
+}
+$('#gl-q').addEventListener('input',e=>renderGlossary(e.target.value));
+
+const tip=$('#tip');
+function showTip(el){const g=GL.find(x=>x[0]===el.dataset.term);if(!g)return;tip.innerHTML=`<b>${esc(g[0])}</b>${esc(g[1])}`;tip.hidden=false;const r=el.getBoundingClientRect();const w=Math.min(320,window.innerWidth-32);tip.style.maxWidth=w+'px';let x=Math.min(Math.max(16,r.left),window.innerWidth-w-16);tip.style.left=x+'px';tip.style.top=(r.bottom+8)+'px'}
+document.addEventListener('mouseover',e=>{const t=e.target.closest('.term');if(t)showTip(t)});
+document.addEventListener('mouseout',e=>{if(e.target.closest('.term'))tip.hidden=true});
+document.addEventListener('click',e=>{const t=e.target.closest('.term');if(t){showTip(t)}else tip.hidden=true});
+document.addEventListener('focusin',e=>{const t=e.target.closest('.term');if(t)showTip(t)});
+document.addEventListener('focusout',e=>{if(e.target.closest('.term'))tip.hidden=true});
+window.addEventListener('scroll',()=>{tip.hidden=true},{passive:true});
+
+function setCountry(k){
+  if(!C[k])return; cur=k;
+  try{localStorage.setItem('dm-country',k)}catch(e){}
+  $('#pick-flag').outerHTML=flag(k).replace('class="flag"','class="flag" id="pick-flag"');
+  $('#pick-name').textContent=C[k].name;
+  renderDomains(); renderTimeline(); renderSources(); renderSummary();
+}
+/* výběr státu */
+const pBtn=$('#pick-btn'), pPop=$('#pick-pop'), pQ=$('#pick-q'), pList=$('#pick-list');
+let pActive=0, pOpts=[];
+const norm=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+function renderPicker(){
+  const q=norm(pQ.value.trim());
+  const all=ORDER.map(k=>({k,name:C[k].name,ready:true})).concat(SOON.map(x=>({...x,ready:false})))
+    .filter(x=>!q||norm(x.name).includes(q)||x.k.includes(q));
+  const groups={};all.forEach(x=>{(groups[REGION[x.k]||'Ostatní']=groups[REGION[x.k]||'Ostatní']||[]).push(x)});
+  pOpts=[];let h='';
+  Object.keys(groups).sort((a,b)=>a.localeCompare(b,'cs')).forEach(g=>{
+    h+=`<li class="pick-group" role="presentation">${esc(g)}</li>`;
+    groups[g].sort((a,b)=>(b.ready-a.ready)||a.name.localeCompare(b.name,'cs')).forEach(x=>{
+      const i=pOpts.length; if(x.ready) pOpts.push(x.k);
+      let meta='<span class="soon">připravujeme</span>';
+      if(x.ready){const s=overallOf(x.k),r=regimeOf(s);meta=`<span class="rd" style="background:var(${r.c})" title="${esc(r.name)}"></span>${Math.round(s)}`}
+      h+=`<li class="pick-opt" role="option" id="po-${x.k}" data-k="${x.k}" aria-selected="${x.k===cur}" ${x.ready?'':'aria-disabled="true"'} ${x.ready&&i===pActive?'data-active="1"':''}>${flag(x.k)}<span>${esc(x.name)}</span><span class="meta">${meta}</span></li>`;
+    });
+  });
+  pList.innerHTML=all.length?h:'<li class="pick-empty" role="presentation">Stát jsme nenašli.</li>';
+  $('#pick-foot').textContent=`${ORDER.length} států měříme, ${SOON.length} připravujeme`;
+  if(pOpts[pActive]) pQ.setAttribute('aria-activedescendant','po-'+pOpts[pActive]); else pQ.removeAttribute('aria-activedescendant');
+}
+function openPicker(){pPop.hidden=false;pBtn.setAttribute('aria-expanded','true');pQ.value='';pActive=Math.max(0,ORDER.indexOf(cur));renderPicker();pActive=pOpts.indexOf(cur);renderPicker();pQ.focus()}
+function closePicker(focusBtn){pPop.hidden=true;pBtn.setAttribute('aria-expanded','false');if(focusBtn)pBtn.focus()}
+pBtn.addEventListener('click',()=>pPop.hidden?openPicker():closePicker());
+pQ.addEventListener('input',()=>{pActive=0;renderPicker()});
+pQ.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'){e.preventDefault();pActive=Math.min(pOpts.length-1,pActive+1);renderPicker();$('#po-'+pOpts[pActive])?.scrollIntoView({block:'nearest'})}
+  else if(e.key==='ArrowUp'){e.preventDefault();pActive=Math.max(0,pActive-1);renderPicker();$('#po-'+pOpts[pActive])?.scrollIntoView({block:'nearest'})}
+  else if(e.key==='Enter'){e.preventDefault();if(pOpts[pActive]){setCountry(pOpts[pActive]);closePicker(true)}}
+  else if(e.key==='Escape'){closePicker(true)}
+});
+pList.addEventListener('click',e=>{const o=e.target.closest('.pick-opt');if(!o||o.getAttribute('aria-disabled')==='true')return;setCountry(o.dataset.k);closePicker(true)});
+document.addEventListener('click',e=>{if(!pPop.hidden&&!e.target.closest('#picker'))closePicker()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!pPop.hidden)closePicker(true)});
+
+renderRegimes(); renderWeights(); renderGlossary(); setCountry(cur);
+</script>
+
+</body></html>
